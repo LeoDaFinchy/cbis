@@ -1,0 +1,10 @@
+.Game {
+    padding: 4px;
+    background-color: #333333;
+    min-height: 100vh;
+
+    transform-origin: center;
+    perspective-origin: center;
+    perspective: 100vw;
+    text-align: center;
+}

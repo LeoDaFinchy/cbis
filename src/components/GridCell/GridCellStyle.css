@@ -1,0 +1,116 @@
+.GridCell {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    /* border: 4px solid var(--light); */
+    text-align: center;
+    font-size: 10px;
+    text-align: center;
+
+    user-select: none;
+    transform-style: preserve-3d;
+    background-size: cover;
+    image-rendering: pixelated;
+
+    background-image: url(../../images/grass8.jpg);
+}
+
+.GridCell.type-0 {
+    background-color: var(--light);
+    color: var(--dark);
+}
+
+.GridCell.type-1 {
+    background-color: var(--dark);
+    color: var(--light);
+    
+}
+
+.GridCell .second {
+    background-image: url(../../images/grass8.jpg);
+    width: 32px;
+    height: 32px;
+    background-size: 32px 32px;
+    /* border: 4px solid var(--light); */
+    background-position: center;
+    image-rendering: pixelated;
+    position: absolute;
+    left: 0px;
+    top: 0;
+    transform-style: preserve-3d;
+}
+
+
+.GridCell.type-1 .second {
+    filter: brightness(0.9);
+    transform: matrix3d(
+        1, 0, 1, 0,
+        0, 1, -1, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1);
+}
+
+.GridCell.type-2 .second{
+    filter: brightness(1.2);
+    transform: matrix3d(
+        1, 0, 0, 0,
+        0, 1, -1, 0,
+        0, 0, 1, 0,
+        0, 0, 16, 1);
+}
+
+.GridCell.type-3 .second {
+    filter: brightness(1.5);
+    transform: matrix3d(
+        1, 0, -1, 0,
+        0, 1, -1, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1);
+}
+
+.GridCell.type-4 .second {
+    filter: brightness(1.2);
+    transform: matrix3d(
+        1, 0, -1, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 16, 1);
+}
+
+.GridCell.type-5 .second {
+    filter: brightness(0.9);
+    transform: matrix3d(
+        1, 0, -1, 0,
+        0, 1, 1, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1);
+}
+
+.GridCell.type-6 .second {
+    filter: brightness(0.6);
+    transform: matrix3d(
+        1, 0, 0, 0,
+        0, 1, 1, 0,
+        0, 0, 1, 0,
+        0, 0, 16, 1);
+}
+.GridCell.type-7 .second {
+    filter: brightness(0.4);
+    transform: matrix3d(
+        1, 0, 1, 0,
+        0, 1, 1, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1);
+}
+.GridCell.type-8 .second {
+    filter: brightness(0.6);
+    transform: matrix3d(
+        1, 0, 1, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 16, 1);
+}
+.GridCell.type-9 .second {
+    filter: brightness(1.2);
+    transform: translateZ(32px);
+}
