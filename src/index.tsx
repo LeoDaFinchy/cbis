@@ -5,8 +5,22 @@ import reportWebVitals from './reportWebVitals';
 
 import Game from './engine/Game';
 import GameComponent from './components/Game/GameComponent';
+import Grid from './engine/Grid';
+
+import constants from './constants';
 
 const testGame = new Game();
+
+ReactDOM.render(
+    <React.StrictMode>
+        {':root{'}
+        {`--grid-width: ${constants.gridWidth}px;`}
+        {`--grid-height: ${constants.gridHeight}px;`}
+        {`--grid-spacing: ${constants.gridSpacing}px`}
+        {'}'}
+    </React.StrictMode>,
+    document.getElementById('root-style')
+);
 
 ReactDOM.render(
     <React.StrictMode>
@@ -15,24 +29,32 @@ ReactDOM.render(
     document.getElementById('root')
 );
 
-const processes = (function*(processes: Array<Function>) {
-    while (true){
-        yield processes.shift()
+let grid: Grid;
+
+const generator = function* gen(inputs: Iterable<Function>){
+    for(const input of inputs){
+        yield input()
     }
-})([
-    () => { testGame.createGrid(15, 15);},
-    ...Array(1).fill(() => {
-        const grid = Array.from(testGame.grids.values())[0];
-        grid.cells[
-            Math.floor(Math.random() * grid.width)
-        ][
-            Math.floor(Math.random() * grid.height)
-        ].spawnBoi()
-    })
+}
+
+const processes = generator([
+    () => { 
+        testGame.createGrid(15, 15);
+    },
+    ...Array(10).fill(() => {
+        grid = Array.from(testGame.grids.values())[0];
+        grid.getRandomAccessibleCell().spawnBoi()
+    }),
+    () => {
+        grid.bois.forEach(boi => {
+            const destination = grid.getRandomAccessibleCell();
+            boi.startRouting(destination)
+        });
+    },
 ])
 
 document.onclick = () => {
-    processes.next().value?.();
+    processes.next();
 }
 
 // If you want to start measuring performance in your app, pass a function

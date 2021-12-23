@@ -21,8 +21,6 @@ const GameComponent = (props: gameProps) => {
         return () => {game.onGameUpdated.remove(setGameData)};
     }, [game.onGameUpdated]);
 
-    console.log(gameData);
-
     return (
         <div className='Game'>
             {

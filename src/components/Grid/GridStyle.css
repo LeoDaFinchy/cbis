@@ -1,13 +1,13 @@
 .Grid {
-    min-width: 24px;
-    min-height: 24px;
-    border: 4px solid #cccccc;
-    margin: 4px;
+    min-width: var(--grid-width);
+    min-height: var(--grid-height);
+    border: var(--grid-spacing) solid #cccccc;
+    margin: var(--grid-spacing);
 
     display: inline-grid;
     grid-auto-flow: column;
-    gap: 4px;
-    padding: 4px;
+    gap: var(--grid-spacing);
+    padding: var(--grid-spacing);
 
     --tilt: 45deg;
     --twist: 0deg;
