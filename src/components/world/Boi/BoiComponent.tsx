@@ -1,7 +1,7 @@
 import './BoiStyle.css';
 
 import React from 'react';
-import Boi from '../../engine/Boi';
+import Boi from '../../../engine/Boi';
 
 interface BoiProps {
     boi: Boi

@@ -1,0 +1,90 @@
+.GridCell {
+    position: relative;
+    width: var(--grid-width);
+    height: var(--grid-height);
+    text-align: center;
+    font-size: 10px;
+    text-align: center;
+
+    user-select: none;
+    transform-style: preserve-3d;
+    background-size: cover;
+    image-rendering: pixelated;
+
+    background-image: url(../../../images/grass8.jpg);
+}
+
+.GridCell.type-0 {
+    background-color: var(--light);
+    color: var(--dark);
+}
+
+.GridCell.type-1 {
+    filter: hue-rotate(-100deg);
+}
+
+.ActivityZoneCell {
+    background-image: linear-gradient(0.125turn,
+        red 0px,
+        red 4px,
+        transparent 4px,
+        transparent 8px,
+        red 8px,
+        red 12px,
+        transparent 12px,
+        transparent 16px,
+        red 16px,
+        red 20px,
+        transparent 20px,
+        transparent 24px,
+        red 24px,
+        red 28px,
+        transparent 28px,
+        transparent 32px,
+        red 32px,
+        red 36px,
+        transparent 36px,
+        transparent 40px,
+        red 40px,
+        red 44px,
+        transparent 44px,
+        transparent 48px
+    );
+    /* border: red 4px solid; */
+    background-size: var(--grid-width) var(--grid-height);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+.ActivityZoneCell.PreviewZoneCell {
+
+    background-image: linear-gradient(0.125turn,
+        yellow 0px,
+        yellow 4px,
+        transparent 4px,
+        transparent 8px,
+        yellow 8px,
+        yellow 12px,
+        transparent 12px,
+        transparent 16px,
+        yellow 16px,
+        yellow 20px,
+        transparent 20px,
+        transparent 24px,
+        yellow 24px,
+        yellow 28px,
+        transparent 28px,
+        transparent 32px,
+        yellow 32px,
+        yellow 36px,
+        transparent 36px,
+        transparent 40px,
+        yellow 40px,
+        yellow 44px,
+        transparent 44px,
+        transparent 48px
+    );
+}

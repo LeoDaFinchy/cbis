@@ -2,15 +2,16 @@ import './GridStyle.css';
 
 import React, { useState, useEffect } from 'react';
 
-import Grid from '../../engine/Grid';
-import GridCell from '../../engine/GridCell';
+import Grid from '../../../engine/Grid';
+import GridCell from '../../../engine/GridCell';
 
 import GridCellComponent from '../GridCell/GridCellComponent';
-import GridOverlayComponent from '../GridOverlay/GridOverlayComponent';
-import AStar from '../../engine/AStar';
-import Point2D from '../../engine/Point2D';
+import GridOverlayComponent from '../../ui/GridOverlay/GridOverlayComponent';
+import AStar from '../../../engine/AStar';
+import Point2D from '../../../engine/Point2D';
 
-import constants from '../../constants';
+import constants from '../../../constants';
+import ActivityZone from '../../../engine/ActivityZone';
 
 interface gridProps {
     grid: Grid
@@ -59,7 +60,12 @@ const GridComponent = (props: gridProps) => {
             {
                 Array.from(gridData.cells).map((cellColumn: Array<GridCell>) => (
                     Array.from(cellColumn).map((cell: GridCell) => (
-                        <GridCellComponent key={`${cell.position.x},${cell.position.y}`} gridCell={cell} />
+                        <GridCellComponent
+                            key={`${cell.position.x},${cell.position.y}`} 
+                            gridCell={cell}
+                            zones={gridData.zones.filter((zone:ActivityZone) => zone.contains(cell))}
+                            isInPreviewZone={gridData.previewZone?.contains(cell) ?? false}
+                        />
                     ))
                 ))
             }
