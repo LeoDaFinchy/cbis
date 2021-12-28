@@ -1,3 +1,4 @@
+import ActivityZone from './ActivityZone';
 import AStar from './AStar';
 import { StandingBodyState, WalkingBodyState } from './BodyState';
 import Boi from './Boi';
@@ -21,7 +22,7 @@ export class RoutingMindState implements MindState {
     type: MindStateType;
 
     onDone: Pulse;
-    constructor(boi: Boi, destination: GridCell){
+    constructor(boi: Boi, destination: GridCell | ActivityZone){
         this.boi = boi;
         this.route = this.boi.gridCell.grid.findPath(boi.gridCell, destination);
         this.type = MindStateType.routingMindState;

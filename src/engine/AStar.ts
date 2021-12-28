@@ -1,3 +1,4 @@
+import ActivityZone from './ActivityZone';
 import GridCell from './GridCell';
 
 class AStarNode {
@@ -17,19 +18,19 @@ class AStarNode {
 
 class AStar {
     source: GridCell
-    destination: GridCell
+    destination: GridCell | ActivityZone
     leaves: Array<AStarNode>
     branches: Map<GridCell, AStarNode>
     router: Generator;
     finalRoute: Array<GridCell> | null;
-    constructor(source: GridCell, destination: GridCell){
+    constructor(source: GridCell, destination: GridCell | ActivityZone){
         this.source = source;
         this.destination = destination;
         const firstLeaf = new AStarNode(
             null,
             this.source,
             0,
-            source.position.vectorTo(destination.position).length()
+            source.location.vectorTo(destination.location.nearestToPoint(source.location)).length()
         );
         this.leaves = [firstLeaf];
         this.branches = new Map();
@@ -61,8 +62,8 @@ class AStar {
             }
             for (const leaf of availableNewLeaves) {
                 if(leaf){
-                    const cost = nextBranch.node.position.vectorTo(leaf.position).length() + nextBranch.cost;
-                    const estimate = leaf.position.vectorTo(this.destination.position).length();
+                    const cost = nextBranch.node.location.vectorTo(leaf.location).length() + nextBranch.cost;
+                    const estimate = leaf.location.vectorTo(this.destination.location.nearestToPoint(leaf.location)).length();
                     const total = cost + estimate;
                     if(this.branches.has(leaf)){
                         const leafNode = this.branches.get(leaf);
@@ -91,7 +92,7 @@ class AStar {
     }
     checkLeaves(){
         this.leaves.forEach(leaf => {
-            if(leaf.node === this.destination){
+            if(leaf.node === leaf.node.grid.getLocalCell(this.destination.location.nearestToPoint(leaf.node.location))){
                 this.finalRoute = this.getPathBack(leaf);
                 this.branches.clear();
                 this.leaves = [];
@@ -113,7 +114,7 @@ class AStar {
         while(branch) {
             trace.push(branch.node);
             if(branch.previous?.previous === branch){
-                console.log('major error: infinite loop between ', branch.node.position.asArray(), branch.previous.node.position.asArray());
+                console.log('major error: infinite loop between ', branch.node.location.asArray(), branch.previous.node.location.asArray());
                 return trace;
             }
             branch = branch.previous;

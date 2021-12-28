@@ -20,7 +20,7 @@
 }
 
 .GridCell.type-1 {
-    filter: hue-rotate(-100deg);
+    filter: brightness(0.5);
 }
 
 .ActivityZoneCell {

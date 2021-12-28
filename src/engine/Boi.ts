@@ -3,6 +3,7 @@ import GridCell from './GridCell';
 import { BodyState, StandingBodyState } from './BodyState';
 import { MindState, RoutingMindState, TravellingMindState } from './MindState';
 import Pulse from './Pulse';
+import ActivityZone from './ActivityZone';
 
 class Boi {
     id: number;
@@ -38,7 +39,7 @@ class Boi {
         })
     }
 
-    startRouting(destination: GridCell){
+    startRouting(destination: GridCell | ActivityZone){
         const newState = new RoutingMindState(this, destination);
         this.mindStates.push(newState);
         newState.onDone.add(this.whenRoutingFinished);
@@ -59,7 +60,18 @@ class Boi {
 
     whenTravellingFinished = (finishedMindState: TravellingMindState) => {
         this.mindStates.splice(this.mindStates.findIndex(mindState => mindState === finishedMindState), 1)
-        this.startRouting(this.gridCell.grid.getRandomAccessibleCell());
+
+
+        if(this.gridCell.grid.zones.length > 0) {
+            if(this.gridCell.grid.zones[0].contains(this.gridCell)){
+                this.startRouting(this.gridCell.grid.getRandomAccessibleCell());
+            } else {
+                this.startRouting(this.gridCell.grid.zones[0]);
+            }
+        } else {
+            this.startRouting(this.gridCell.grid.getRandomAccessibleCell());
+        }
+
 
         // console.log('finished Travelling', finishedMindState);
     }

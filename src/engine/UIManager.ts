@@ -44,18 +44,18 @@ class ZoningUIMode implements UIMode{
     }
     receiveGridCellPress(gridCell: GridCell){
         this.zoneStart = gridCell;
-        this.callbacks.onPreviewZone.send(this.zoneStart.position, this.zoneStart.position, this.zoneStart.grid);
+        this.callbacks.onPreviewZone.send(this.zoneStart.location, this.zoneStart.location, this.zoneStart.grid);
     }
     receiveGridCellEnter(gridCell: GridCell){
         if(this.zoneStart?.grid === gridCell.grid){
-            const [leftTop, rightBottom] = this.zoneStart.position.rearrangedToRectangleLTRB(gridCell.position)
+            const [leftTop, rightBottom] = this.zoneStart.location.rearrangedToRectangleLTRB(gridCell.location)
             this.callbacks.onPreviewZone.send(leftTop, rightBottom, this.zoneStart.grid);
         }
     }
     receiveGridCellRelease(gridCell: GridCell){
-        console.log('gridCell Released', gridCell.position.asArray())
+        console.log('gridCell Released', gridCell.location.asArray())
         if(this.zoneStart?.grid === gridCell.grid){
-            const [leftTop, rightBottom] = this.zoneStart.position.rearrangedToRectangleLTRB(gridCell.position)
+            const [leftTop, rightBottom] = this.zoneStart.location.rearrangedToRectangleLTRB(gridCell.location)
             this.callbacks.onCreateZone.send(leftTop, rightBottom, this.zoneStart.grid);
             this.callbacks.onPreviewZoneEnd.send(this.zoneStart.grid);
         }
@@ -95,7 +95,12 @@ class UIManager {
 
     switchUIMode(uiMode: UIModeTypes){
         console.log('switchUIMode');
-        this.uiMode = new UIModeMap[uiMode](this.callbacks());
+        // If this is already in this mode, toggle off (go to default mode) instead
+        if(this.uiMode.modeType === uiMode) {
+            this.uiMode = new UIModeMap[UIModeTypes.DefaultUIMode](this.callbacks());
+        } else {
+            this.uiMode = new UIModeMap[uiMode](this.callbacks());
+        }
         this.onUIModeChanged.send(this.asData());
     }
 
