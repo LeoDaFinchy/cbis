@@ -114,7 +114,7 @@ class AStar {
         while(branch) {
             trace.push(branch.node);
             if(branch.previous?.previous === branch){
-                console.log('major error: infinite loop between ', branch.node.location.asArray(), branch.previous.node.location.asArray());
+                console.error('major error: infinite loop between ', branch.node.location.asArray(), branch.previous.node.location.asArray());
                 return trace;
             }
             branch = branch.previous;

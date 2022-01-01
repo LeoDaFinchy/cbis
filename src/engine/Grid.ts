@@ -5,6 +5,9 @@ import Pulse from './Pulse';
 import Boi from './Boi';
 import UIManager from './UIManager';
 import ActivityZone from './ActivityZone';
+import { Activity } from './Activity';
+import { ActivityDefinition } from './dataLibraries/ActivityLibrary';
+import { globalGame } from './Game';
 
 class Grid{
     id: number;
@@ -15,6 +18,8 @@ class Grid{
     bois: Array<Boi>;
     uiManager: UIManager;
     zones: Array<ActivityZone>;
+    activities: Array<Activity>;
+    possibleActivities: Array<ActivityDefinition>;
     previewZone: ActivityZone | null;
 
     onGridUpdated: Pulse;
@@ -24,6 +29,8 @@ class Grid{
         this.height = height;
         this.uiManager = uiManager;
         this.zones = [];
+        this.activities = [];
+        this.possibleActivities = [];
         this.previewZone = null;
         this.cells = new Array(width).fill(null).map(
             (v, i) => new Array(height).fill(null).map(
@@ -97,12 +104,20 @@ class Grid{
         this.onGridUpdated.send(this.asData());
     }
 
+    refreshPossibleLocalActivities(){
+        const filteredActivities = (globalGame.game?.data.activities.list ?? []).filter(activity => {
+            return activity.zoneNeeds === null;
+        });
+        this.possibleActivities = filteredActivities;
+    }
+
     clearPreviewZone() {
         this.previewZone = null;
         this.onGridUpdated.send(this.asData());
     }
 
     FPS1(){
+        this.refreshPossibleLocalActivities();
         this.bois.forEach(boi => {
             boi.FPS1();
         })

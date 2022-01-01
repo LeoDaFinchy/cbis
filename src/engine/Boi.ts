@@ -1,9 +1,18 @@
 import AStar from './AStar';
 import GridCell from './GridCell';
 import { BodyState, StandingBodyState } from './BodyState';
-import { MindState, RoutingMindState, TravellingMindState } from './MindState';
+import {
+    MindState,
+    LookingForActivityMindState,
+    RoutingMindState,
+    TravellingMindState,
+    GoingToActivityMindState,
+    DoingActivityMindState,
+} from './MindState';
 import Pulse from './Pulse';
 import ActivityZone from './ActivityZone';
+import { ActivityDefinition } from './dataLibraries/ActivityLibrary';
+import { Activity } from './Activity';
 
 class Boi {
     id: number;
@@ -33,16 +42,23 @@ class Boi {
         this.bodyState = new StandingBodyState();
     }
 
+    getPossibleLocalActivities(){
+        return this.gridCell.grid.possibleActivities.filter((activity: ActivityDefinition) => {
+            return activity.participantNeeds.length <= 1;
+        });
+    }
+
     doMindStates(){
         this.mindStates.forEach((mindState: MindState) => {
             mindState.do();
         })
     }
 
-    startRouting(destination: GridCell | ActivityZone){
+    startRouting(destination: GridCell | ActivityZone): RoutingMindState{
         const newState = new RoutingMindState(this, destination);
         this.mindStates.push(newState);
         newState.onDone.add(this.whenRoutingFinished);
+        return newState;
     }
 
     whenRoutingFinished = (finishedMindState: RoutingMindState) => {
@@ -60,20 +76,45 @@ class Boi {
 
     whenTravellingFinished = (finishedMindState: TravellingMindState) => {
         this.mindStates.splice(this.mindStates.findIndex(mindState => mindState === finishedMindState), 1)
+    }
 
+    startLookingForActivity(){
+        const newJobSearch = new LookingForActivityMindState(this);
+        this.mindStates.push(newJobSearch);
+        newJobSearch.onDone.add(this.whenLookingForActivityFinished);
+    }
 
-        if(this.gridCell.grid.zones.length > 0) {
-            if(this.gridCell.grid.zones[0].contains(this.gridCell)){
-                this.startRouting(this.gridCell.grid.getRandomAccessibleCell());
-            } else {
-                this.startRouting(this.gridCell.grid.zones[0]);
-            }
-        } else {
-            this.startRouting(this.gridCell.grid.getRandomAccessibleCell());
+    whenLookingForActivityFinished = (finishedMindState: LookingForActivityMindState) => {
+        const { foundActivity } = finishedMindState;
+
+        if(foundActivity) {
+            this.mindStates.splice(this.mindStates.findIndex(mindState => mindState === finishedMindState), 1);
+            this.startGoingToActivity(foundActivity);
         }
+    }
 
+    startGoingToActivity(activity: Activity){
+        const goingState = new GoingToActivityMindState(this, activity);
+        activity.location = this.gridCell.grid.getRandomAccessibleCell();
+        this.startRouting(activity.location);
+        this.mindStates.push(goingState);
+        goingState.onDone.add(this.whenGoingToActivityFinished);
+    }
 
-        // console.log('finished Travelling', finishedMindState);
+    whenGoingToActivityFinished = (finishedMindState: GoingToActivityMindState) => {
+        this.mindStates.splice(this.mindStates.findIndex(mindState => mindState === finishedMindState), 1);
+        this.startDoingActivity(finishedMindState.activity);
+    }
+
+    startDoingActivity(activity: Activity){
+        const doingState = new DoingActivityMindState(this, activity);
+        doingState.onDone.add(this.whenDoingActivityFinished);
+        this.mindStates.push(doingState);
+    }
+
+    whenDoingActivityFinished = (finishedMindState: DoingActivityMindState) => {
+        this.mindStates.splice(this.mindStates.findIndex(mindState => mindState === finishedMindState))
+        this.startLookingForActivity();
     }
 
     FPS1() {}

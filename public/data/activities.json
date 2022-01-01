@@ -1,0 +1,14 @@
+{
+    "activities": [
+        {
+            "name": "dance",
+            "label": "Do a little dance",
+            "participantNeeds": [
+                {
+                    "type": "boi"
+                }
+            ],
+            "timePeriodMS": 2000
+        }
+    ]
+}
