@@ -1,4 +1,4 @@
-import Boi from "../Boi";
+import Boi from '../Boi';
 
 export interface ActivityDefinitionJson {
     name: string,
@@ -7,7 +7,7 @@ export interface ActivityDefinitionJson {
     participantNeeds: Array<Object>,
     materialNeeds: Array<Object>,
     toolNeeds: Array<Object>,
-    zoneNeeds: Object | null;
+    zoneNeeds: Array<Object>;
 }
 
 export class ActivityDefinition implements ActivityDefinitionJson{
@@ -17,7 +17,7 @@ export class ActivityDefinition implements ActivityDefinitionJson{
     participantNeeds: Array<Object>
     materialNeeds: Array<Object>
     toolNeeds: Array<Object>
-    zoneNeeds: Object | null
+    zoneNeeds: Array<Object>
     constructor({
         name,
         label = "",
@@ -25,7 +25,7 @@ export class ActivityDefinition implements ActivityDefinitionJson{
         participantNeeds = [],
         materialNeeds = [],
         toolNeeds = [],
-        zoneNeeds = null
+        zoneNeeds = []
     }: ActivityDefinitionJson){
         this.name = name;
         this.label = label;

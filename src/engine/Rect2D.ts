@@ -10,6 +10,14 @@ class Rect2D implements RelativeLocation{
         this.rearrange();
     }
 
+    get width(){
+        return this.rightBottom.x - this.leftTop.x;
+    }
+
+    get height(){
+        return this.rightBottom.y - this.leftTop.y;
+    }
+
     nearestToPoint(point: Point2D): Point2D{
         const x = this.pointIsWest(point) ? this.leftTop.x
             : this.pointIsEast(point) ? this.rightBottom.x

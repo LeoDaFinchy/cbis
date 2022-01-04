@@ -7,7 +7,7 @@ export class Activity {
     participants: Array<Boi>
     materials: Array<Item>
     tools: Array<Item>
-    location: GridCell | null
+    location: GridCell | undefined
 
     definition: ActivityDefinition
 
@@ -16,6 +16,6 @@ export class Activity {
         this.participants = [];
         this.materials = [];
         this.tools = [];
-        this.location = null;
+        this.location = undefined;
     }
 }

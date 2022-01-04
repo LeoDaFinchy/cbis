@@ -43,9 +43,11 @@ const processes = generator([
     () => { 
         testGame.createGrid(15, 15);
     },
-    ...Array(8).fill(() => {
+    ...Array(1).fill(() => {
         grid = Array.from(testGame.grids.values())[0];
-        grid.getRandomAccessibleCell().spawnBoi()
+        for(let n in Array(8).fill(null)){
+            grid.getRandomAccessibleCell().spawnBoi()
+        }
     }),
     () => {
         grid.bois.forEach(boi => {
