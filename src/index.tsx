@@ -4,7 +4,7 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 
 import Game from './engine/Game';
-import GameComponent from './components/Game/GameComponent';
+import GameComponent from './components/ui/Game/GameComponent';
 import Grid from './engine/Grid';
 
 import constants from './constants';

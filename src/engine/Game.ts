@@ -1,20 +1,21 @@
 import Pulse from './Pulse';
 import Grid from './Grid';
+import UIManager from './UIManager';
+import Point2D from './Point2D';
 
 class Game {
     grids: Set<Grid>;
+    uiManager: UIManager;
 
     onGameUpdated: Pulse;
-    // onFPS1: Pulse;
-    // onFPS10: Pulse;
-    // onFPS60: Pulse;
     constructor(){
         this.grids = new Set();
+        this.uiManager = new UIManager();
+        this.uiManager.onCreateZone.add(this.createZone);
+        this.uiManager.onPreviewZone.add(this.previewZone);
+        this.uiManager.onPreviewZoneEnd.add(this.clearPreviewZone);
         
         this.onGameUpdated = new Pulse();
-        // this.onFPS1 = new Pulse();
-        // this.onFPS10 = new Pulse();
-        // this.onFPS60 = new Pulse();
 
         window.setInterval(() => this.FPS1(), 1000);
         window.setInterval(() => this.FPS5(), 1000/5);
@@ -25,14 +26,26 @@ class Game {
     createGrid(width: number, height: number){
         const newGrid = new Grid(
             width,
-            height
+            height,
+            this.uiManager
         );
         this.grids.add(newGrid);
-        this.grids = new Set(this.grids);
 
         this.onGameUpdated.send(this.asData());
 
         return newGrid;
+    }
+
+    createZone = (startZone: Point2D, endZone: Point2D, grid: Grid) => {
+        console.log('Game creating zone');
+        grid.createZone(startZone, endZone);
+    }
+
+    previewZone = (startZone: Point2D, endZone: Point2D, grid: Grid) => {
+        grid.setPreviewZone(startZone, endZone);
+    }
+    clearPreviewZone = (grid: Grid) => {
+        grid.clearPreviewZone();
     }
 
     FPS1(){

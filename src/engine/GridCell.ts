@@ -2,21 +2,24 @@ import Boi from './Boi';
 import Grid from './Grid';
 import Pulse from './Pulse';
 import Point2D from './Point2D';
+import UIManager from './UIManager';
 
 class GridCell{
     grid: Grid;
     position: Point2D;
     TEMP_terrain_type: number;
     entities: Set<Boi>;
+    uiManager: UIManager;
 
     onGridCellUpdated: Pulse;
     onGridCellSpawnedBoi: Pulse;
 
-    constructor(grid: Grid, x: number, y: number) {
+    constructor(grid: Grid, x: number, y: number, uiManager: UIManager) {
         this.grid = grid;
         this.position = new Point2D(x, y);
         this.TEMP_terrain_type = 0;
         this.entities = new Set();
+        this.uiManager = uiManager;
 
         this.onGridCellUpdated = new Pulse();
         this.onGridCellSpawnedBoi = new Pulse();
@@ -34,6 +37,18 @@ class GridCell{
         this.onGridCellSpawnedBoi.send(newBoi);
 
         return newBoi;
+    }
+
+    gridCellPressed(){
+        this.uiManager.receiveGridCellPress(this);
+    }
+
+    gridCellEntered(){
+        this.uiManager.receiveGridCellEnter(this);
+    }
+
+    gridCellReleased(){
+        this.uiManager.receiveGridCellRelease(this);
     }
 
     claimBoi(boi: Boi){
@@ -71,7 +86,10 @@ class GridCell{
             position: this.position.asData(),
             TEMP_terrain_type: this.TEMP_terrain_type,
             bois: this.entities,
-            cycleTEMP_terrain_type: this.cycleTEMP_terrain_type.bind(this)
+            cycleTEMP_terrain_type: this.cycleTEMP_terrain_type.bind(this),
+            gridCellPressed: this.gridCellPressed.bind(this),
+            gridCellReleased: this.gridCellReleased.bind(this),
+            gridCellEntered: this.gridCellEntered.bind(this)
         }
     }
 }
