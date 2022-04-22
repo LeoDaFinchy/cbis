@@ -33,7 +33,10 @@
             ],
             "toolNeeds": [
                 {
-                    "type": ["mat"]
+                    "types": ["mat"]
+                },
+                {
+                    "types": ["mat"]
                 }
             ],
             "timePeriodMS": 10000

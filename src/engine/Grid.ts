@@ -6,9 +6,11 @@ import Boi from './Boi';
 import UIManager from './UIManager';
 import ActivityZone from './ActivityZone';
 import { Activity } from './Activity';
-import { ActivityDefinition, ItemSpecification } from './dataLibraries/ActivityLibrary';
+import { ActivityDefinition } from './dataLibraries/ActivityLibrary';
 import { globalGame } from './Game';
 import { Item } from './Item';
+import { requisition } from './Quartermaster';
+import { Inventory } from './Inventory';
 
 class Grid{
     id: number;
@@ -21,7 +23,7 @@ class Grid{
     zones: Array<ActivityZone>;
     activities: Array<Activity>;
     possibleActivities: Array<ActivityDefinition>;
-    localGridItems: Array<Item>;
+    localGridItems: Inventory;
     previewZone: ActivityZone | null;
 
     onGridUpdated: Pulse;
@@ -33,7 +35,7 @@ class Grid{
         this.zones = [];
         this.activities = [];
         this.possibleActivities = [];
-        this.localGridItems = [];
+        this.localGridItems = new Inventory();
         this.previewZone = null;
         this.cells = new Array(width).fill(null).map(
             (v, i) => new Array(height).fill(null).map(
@@ -85,7 +87,7 @@ class Grid{
     }
 
     whenGridCellAcquiredItem = (item: Item) => {
-        this.localGridItems.push(item);
+        this.localGridItems.addItem(item);
     }
 
     whenGridCellSpawnedBoi = (boi: Boi) => {
@@ -123,16 +125,23 @@ class Grid{
             return false;
         });
 
-        const toolFilteredActivities = (zoneFilteredActivities ?? []).filter(activity => {
-            if(activity.toolNeeds.length === 0) return true;
-            if(activity.toolNeeds.find(toolNeed => {
-                console.log(this.availableTools(toolNeed).length, toolNeed);
-                if(this.availableTools(toolNeed).length === 0) return true;
+        const itemFilteredActivities = (zoneFilteredActivities ?? []).filter(activity => {
+            const temporaryRequisition = requisition(activity, this.localGridItems);
+            if (temporaryRequisition) {
+                this.localGridItems.absorbInventory(temporaryRequisition);
+                return true;
+            } else {
                 return false;
-            })) return false;
-            return true;
+            }
+            // if(activity.toolNeeds.length === 0) return true;
+            // if(activity.toolNeeds.find(toolNeed => {
+            //     console.log(this.availableTools(toolNeed).length, toolNeed);
+            //     if(this.availableTools(toolNeed).length === 0) return true;
+            //     return false;
+            // })) return false;
+            // return true;
         });
-        this.possibleActivities = toolFilteredActivities;
+        this.possibleActivities = itemFilteredActivities;
     }
 
     createActivity(definition: ActivityDefinition, firstParticipant: Boi){
@@ -164,14 +173,14 @@ class Grid{
         })
     }
 
-    availableTools(toolNeed: ItemSpecification){
-        return this.localGridItems.filter(gridItem => {
-            if(toolNeed.type.filter(toolType => gridItem.types.includes(toolType)).length === toolNeed.type.length){
-                return true;
-            }
-            return false;
-        });
-    }
+    // availableTools(toolNeed: ItemSpecification){
+    //     return this.localGridItems.filter(gridItem => {
+    //         if(toolNeed.types.filter(toolType => gridItem.types.includes(toolType)).length === toolNeed.types.length){
+    //             return true;
+    //         }
+    //         return false;
+    //     });
+    // }
 
     clearPreviewZone() {
         this.previewZone = null;

@@ -6,6 +6,7 @@ import Boi from './Boi';
 import { ActivityDefinition } from './dataLibraries/ActivityLibrary';
 import GridCell from './GridCell';
 import Pulse from './Pulse';
+import { requisition } from './Quartermaster';
 
 export enum MindStateType {
     routingMindState,
@@ -86,20 +87,19 @@ export class LookingForActivityMindState implements MindState {
 
         if(validForMe.length > 0){
             const prioritisedActivities = this.prioritiseValidActivities(validForMe);
-            console.log("prioritised:", prioritisedActivities);
             while(this.foundActivity === null){
                 const randomSelector = Math.floor(Math.random() * prioritisedActivities[0].activities.length);
                 const randomSelection = prioritisedActivities[0].activities[randomSelector];
 
-                const availableItems = randomSelection.fetchSatisfactoryItemsFromGrid(this.boi.gridCell.grid);
-                const canPerformTask = !availableItems.find(availability => availability.length === 0);
-                if(canPerformTask){
+                const requisitionItems = requisition(randomSelection, this.boi.gridCell.grid.localGridItems);
+                if(requisitionItems){
                     const foundActivity = this.boi.gridCell.grid.createActivity(randomSelection, this.boi);
-                    console.log(availableItems)
-                    availableItems.forEach(availability => {
-                        foundActivity.tools.push(availability[0].claim(foundActivity));
-                    })
+                    // console.log(requisitionItems)
                     this.foundActivity = foundActivity;
+                    requisitionItems.items.forEach(requisition => {
+                        foundActivity.tools.push(requisition.claim(foundActivity));
+                    })
+                    this.boi.gridCell.grid.localGridItems.absorbInventory(requisitionItems);
                 }
             }
             // console.log(this.foundActivity);

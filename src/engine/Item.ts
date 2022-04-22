@@ -1,7 +1,6 @@
 import { Activity } from './Activity';
 import { UsageClaim } from './UsageClaim';
 import Pulse from './Pulse';
-import GridLocation from './GridLocation';
 
 export interface Container {
     contents: Array<Item>;
@@ -36,9 +35,6 @@ export class Item {
         this.claims.splice(index, 1);
 
         this.onChanged.send(this.asData());
-    }
-
-    selectFromLocation(location: GridLocation){
     }
 
     asData() {
