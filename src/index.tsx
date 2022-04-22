@@ -45,7 +45,7 @@ const processes = generator([
     },
     ...Array(1).fill(() => {
         grid = Array.from(testGame.grids.values())[0];
-        for(let n in Array(1).fill(null)){
+        for(let n in Array(9).fill(null)){
             grid.getRandomAccessibleCell().spawnBoi()
         }
     }),

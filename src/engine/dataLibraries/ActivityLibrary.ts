@@ -1,4 +1,5 @@
 import Boi from '../Boi';
+import Grid from '../Grid';
 
 export interface ItemSpecification {
     type: Array<string>
@@ -47,6 +48,11 @@ export class ActivityDefinition implements ActivityDefinitionJson{
             successful.push(i);
         })
         return successful;
+    }
+    fetchSatisfactoryItemsFromGrid(grid: Grid){
+        return this.toolNeeds.map(toolNeed => {
+            return grid.availableTools(toolNeed).filter(tool => tool.claims.length === 0);
+        });
     }
 }
 

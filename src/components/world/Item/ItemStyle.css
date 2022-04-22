@@ -12,3 +12,7 @@
 .Item.mat {
     background-color: red;
 }
+
+.Item.claimed {
+    border-color: yellow;
+}

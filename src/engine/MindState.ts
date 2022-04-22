@@ -87,9 +87,21 @@ export class LookingForActivityMindState implements MindState {
         if(validForMe.length > 0){
             const prioritisedActivities = this.prioritiseValidActivities(validForMe);
             console.log("prioritised:", prioritisedActivities);
-            const randomSelector = Math.floor(Math.random() * prioritisedActivities[0].activities.length);
-            const randomSelection = prioritisedActivities[0].activities[randomSelector];
-            this.foundActivity = this.boi.gridCell.grid.createActivity(randomSelection, this.boi);
+            while(this.foundActivity === null){
+                const randomSelector = Math.floor(Math.random() * prioritisedActivities[0].activities.length);
+                const randomSelection = prioritisedActivities[0].activities[randomSelector];
+
+                const availableItems = randomSelection.fetchSatisfactoryItemsFromGrid(this.boi.gridCell.grid);
+                const canPerformTask = !availableItems.find(availability => availability.length === 0);
+                if(canPerformTask){
+                    const foundActivity = this.boi.gridCell.grid.createActivity(randomSelection, this.boi);
+                    console.log(availableItems)
+                    availableItems.forEach(availability => {
+                        foundActivity.tools.push(availability[0].claim(foundActivity));
+                    })
+                    this.foundActivity = foundActivity;
+                }
+            }
             // console.log(this.foundActivity);
             this.onDone.send(this);
         }
@@ -154,7 +166,12 @@ export class DoingActivityMindState implements MindState {
         this.timeoutId = window.setTimeout(this.whenTimeoutHasElapsed, activity.definition.timePeriodMS)
     }
 
+    finishActivity(){
+        this.activity.tools.map(claim => claim.release())
+    }
+
     whenTimeoutHasElapsed = () => {
+        this.finishActivity();
         this.onDone.send(this);
     }
 

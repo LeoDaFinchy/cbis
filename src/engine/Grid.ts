@@ -122,10 +122,15 @@ class Grid{
             if(this.zones.length > 0) return true;
             return false;
         });
+
         const toolFilteredActivities = (zoneFilteredActivities ?? []).filter(activity => {
             if(activity.toolNeeds.length === 0) return true;
-            if(this.toolsAreAvailable(activity.toolNeeds)) return true;
-            return false;
+            if(activity.toolNeeds.find(toolNeed => {
+                console.log(this.availableTools(toolNeed).length, toolNeed);
+                if(this.availableTools(toolNeed).length === 0) return true;
+                return false;
+            })) return false;
+            return true;
         });
         this.possibleActivities = toolFilteredActivities;
     }
@@ -134,10 +139,17 @@ class Grid{
         const createdActivity = new Activity(definition);
         createdActivity.participants.push(firstParticipant);
         const possibleZones = this.getPossibleZonesForActivity(definition);
-        // console.log(possibleZones);
         createdActivity.location = possibleZones.length > 0
             ? possibleZones[0].getRandomAccessibleCell()
             : this.getRandomAccessibleCell();
+
+        // definition.toolNeeds.forEach(toolNeed => {
+        //     const toolsAvailable = this.availableTools(toolNeed);
+        //     const selectedToolIndex = Math.floor(Math.random() * toolsAvailable.length);
+        //     const selectedTool = toolsAvailable[selectedToolIndex];
+            
+        //     createdActivity.tools.push(selectedTool.claim(createdActivity));
+        // })
 
         return createdActivity
     }
@@ -152,25 +164,13 @@ class Grid{
         })
     }
 
-    toolsAreAvailable(toolNeeds: Array<ItemSpecification>){
-        // console.log('are tools available?', toolNeeds);
-        for(const toolNeed of toolNeeds){
-            // console.log(this.localGridItems);
-            if(this.localGridItems.filter(gridItem => {
-                // console.log("comparing", gridItem, toolNeed);
-                // #TODO This is a horrible gridlike comparison, also possibly just wrong
-                // needs to be a 'superset' comparison - gridItem > toolNeed
-                if(toolNeed.type.filter(toolType => gridItem.types.includes(toolType)).length === toolNeed.type.length){
-                    return true;
-                }
-                return false;
-            }).length === 0){
-                // console.log('no');
-                return false;
+    availableTools(toolNeed: ItemSpecification){
+        return this.localGridItems.filter(gridItem => {
+            if(toolNeed.type.filter(toolType => gridItem.types.includes(toolType)).length === toolNeed.type.length){
+                return true;
             }
-        }
-        // console.log('yes');
-        return true;
+            return false;
+        });
     }
 
     clearPreviewZone() {

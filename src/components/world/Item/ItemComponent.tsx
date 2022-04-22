@@ -1,6 +1,6 @@
 import './ItemStyle.css';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Item } from '../../../engine/Item';
 
 interface ItemProps {
@@ -10,9 +10,17 @@ interface ItemProps {
 const ItemComponent = (props: ItemProps) => {
     const { item } = props;
 
+    const [itemData, setItemData] = useState(item.asData());
+
+    useEffect(() => {
+        item.onChanged.add(setItemData);
+        return () => {item.onChanged.remove(setItemData)};
+    }, [item.onChanged]);
+
     const className = [
         'Item',
-        ...(item.types || [])
+        ...(itemData.types || []),
+        itemData.claims.length > 0 ? 'claimed' : ''
     ].filter(classNameSegment => classNameSegment.length > 0).join(' ');
 
     return <div
