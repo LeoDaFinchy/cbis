@@ -6,8 +6,9 @@ import Boi from './Boi';
 import UIManager from './UIManager';
 import ActivityZone from './ActivityZone';
 import { Activity } from './Activity';
-import { ActivityDefinition } from './dataLibraries/ActivityLibrary';
+import { ActivityDefinition, ItemSpecification } from './dataLibraries/ActivityLibrary';
 import { globalGame } from './Game';
+import { Item } from './Item';
 
 class Grid{
     id: number;
@@ -20,6 +21,7 @@ class Grid{
     zones: Array<ActivityZone>;
     activities: Array<Activity>;
     possibleActivities: Array<ActivityDefinition>;
+    localGridItems: Array<Item>;
     previewZone: ActivityZone | null;
 
     onGridUpdated: Pulse;
@@ -31,12 +33,14 @@ class Grid{
         this.zones = [];
         this.activities = [];
         this.possibleActivities = [];
+        this.localGridItems = [];
         this.previewZone = null;
         this.cells = new Array(width).fill(null).map(
             (v, i) => new Array(height).fill(null).map(
                 (w, j) => {
                     const newGridCell = new GridCell(this, i, j, this.uiManager);
                     newGridCell.onGridCellSpawnedBoi.add(this.whenGridCellSpawnedBoi);
+                    newGridCell.onGridCellAcquiredItem.add(this.whenGridCellAcquiredItem);
                     return newGridCell;
                 }
             )
@@ -80,6 +84,10 @@ class Grid{
         return pathfinder;
     }
 
+    whenGridCellAcquiredItem = (item: Item) => {
+        this.localGridItems.push(item);
+    }
+
     whenGridCellSpawnedBoi = (boi: Boi) => {
         this.bois.push(boi);
         boi.onBoiUpdated.add(this.whenBoiUpdated);
@@ -109,12 +117,17 @@ class Grid{
     }
 
     refreshPossibleLocalActivities(){
-        const filteredActivities = (globalGame.game?.data.activities.list ?? []).filter(activity => {
+        const zoneFilteredActivities = (globalGame.game?.data.activities.list ?? []).filter(activity => {
             if(activity.zoneNeeds.length === 0) return true;
             if(this.zones.length > 0) return true;
             return false;
         });
-        this.possibleActivities = filteredActivities;
+        const toolFilteredActivities = (zoneFilteredActivities ?? []).filter(activity => {
+            if(activity.toolNeeds.length === 0) return true;
+            if(this.toolsAreAvailable(activity.toolNeeds)) return true;
+            return false;
+        });
+        this.possibleActivities = toolFilteredActivities;
     }
 
     createActivity(definition: ActivityDefinition, firstParticipant: Boi){
@@ -137,6 +150,27 @@ class Grid{
             };
             return false;
         })
+    }
+
+    toolsAreAvailable(toolNeeds: Array<ItemSpecification>){
+        // console.log('are tools available?', toolNeeds);
+        for(const toolNeed of toolNeeds){
+            // console.log(this.localGridItems);
+            if(this.localGridItems.filter(gridItem => {
+                // console.log("comparing", gridItem, toolNeed);
+                // #TODO This is a horrible gridlike comparison, also possibly just wrong
+                // needs to be a 'superset' comparison - gridItem > toolNeed
+                if(toolNeed.type.filter(toolType => gridItem.types.includes(toolType)).length === toolNeed.type.length){
+                    return true;
+                }
+                return false;
+            }).length === 0){
+                // console.log('no');
+                return false;
+            }
+        }
+        // console.log('yes');
+        return true;
     }
 
     clearPreviewZone() {

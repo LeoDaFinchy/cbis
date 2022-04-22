@@ -5,9 +5,11 @@ export interface Container {
 
 export class Item {
     location: Container;
+    types: Array<string>;
 
-    constructor(location: Container){
+    constructor(location: Container, types: Array<string> = []){
         this.location = location;
+        this.types = types;
     }
 
     asData() {

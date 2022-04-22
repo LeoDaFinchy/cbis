@@ -13,6 +13,7 @@ class GridCell implements Container {
     uiManager: UIManager;
 
     onGridCellUpdated: Pulse;
+    onGridCellAcquiredItem: Pulse;
     onGridCellSpawnedBoi: Pulse;
     contents: Array<Item>;
 
@@ -25,6 +26,7 @@ class GridCell implements Container {
         this.contents = [];
 
         this.onGridCellUpdated = new Pulse();
+        this.onGridCellAcquiredItem = new Pulse();
         this.onGridCellSpawnedBoi = new Pulse();
     }
 
@@ -34,6 +36,7 @@ class GridCell implements Container {
 
     addToContents(item: Item){
         this.contents.push(item);
+        this.onGridCellAcquiredItem.send(item);
         this.onGridCellUpdated.send(this.asData());
         return this;
     }

@@ -1,12 +1,16 @@
 import Boi from '../Boi';
 
+export interface ItemSpecification {
+    type: Array<string>
+}
+
 export interface ActivityDefinitionJson {
     name: string,
     label: string,
     timePeriodMS: number,
     participantNeeds: Array<Object>,
-    materialNeeds: Array<Object>,
-    toolNeeds: Array<Object>,
+    materialNeeds: Array<ItemSpecification>,
+    toolNeeds: Array<ItemSpecification>,
     zoneNeeds: Array<Object>;
 }
 
@@ -15,8 +19,8 @@ export class ActivityDefinition implements ActivityDefinitionJson{
     label: string
     timePeriodMS: number
     participantNeeds: Array<Object>
-    materialNeeds: Array<Object>
-    toolNeeds: Array<Object>
+    materialNeeds: Array<ItemSpecification>
+    toolNeeds: Array<ItemSpecification>
     zoneNeeds: Array<Object>
     constructor({
         name,

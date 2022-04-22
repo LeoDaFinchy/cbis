@@ -86,7 +86,7 @@ export class LookingForActivityMindState implements MindState {
 
         if(validForMe.length > 0){
             const prioritisedActivities = this.prioritiseValidActivities(validForMe);
-            // console.log("prioritised:", prioritisedActivities);
+            console.log("prioritised:", prioritisedActivities);
             const randomSelector = Math.floor(Math.random() * prioritisedActivities[0].activities.length);
             const randomSelection = prioritisedActivities[0].activities[randomSelector];
             this.foundActivity = this.boi.gridCell.grid.createActivity(randomSelection, this.boi);

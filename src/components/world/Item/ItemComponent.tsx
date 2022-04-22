@@ -8,7 +8,16 @@ interface ItemProps {
 }
 
 const ItemComponent = (props: ItemProps) => {
-    return <div className='Item'>
+    const { item } = props;
+
+    const className = [
+        'Item',
+        ...(item.types || [])
+    ].filter(classNameSegment => classNameSegment.length > 0).join(' ');
+
+    return <div
+        className={className}
+    >
 
     </div>
 }

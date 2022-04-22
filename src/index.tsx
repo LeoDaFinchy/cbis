@@ -45,7 +45,7 @@ const processes = generator([
     },
     ...Array(1).fill(() => {
         grid = Array.from(testGame.grids.values())[0];
-        for(let n in Array(8).fill(null)){
+        for(let n in Array(1).fill(null)){
             grid.getRandomAccessibleCell().spawnBoi()
         }
     }),
@@ -54,11 +54,13 @@ const processes = generator([
             boi.startLookingForActivity();
         });
     },
-    ...Array(8).fill(() => {
-        grid = Array.from(testGame.grids.values())[0];
-        const gridCell = grid.getRandomAccessibleCell();
-        const item = new Item(gridCell);
-        gridCell.addToContents(item);
+    ...Array(1).fill(() => {
+        for(let n in Array(8).fill(null)){
+            grid = Array.from(testGame.grids.values())[0];
+            const gridCell = grid.getRandomAccessibleCell();
+            const item = new Item(gridCell, Math.random() > 0.7 ? ["mat"] : []);
+            gridCell.addToContents(item);
+        }
     }),
 ])
 
