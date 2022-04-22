@@ -31,12 +31,13 @@ const GridCellComponent = (props: GridCellProps) => {
                 gridCellData.cycleTEMP_terrain_type();
                 e.stopPropagation();
             }}>
-            <code>{gridCellData.x},{gridCellData.y}</code>
-            
-            <div key='tile' className='second' />
+            <code>{gridCellData.position.x},{gridCellData.position.y}</code>
             {
-                Array.from(gridCellData.entities.values()).map((entity: Boi) => (
-                    <BoiComponent boi={entity} />
+                Array.from(gridCellData.bois.values()).map((boi: Boi) => (
+                    <BoiComponent
+                        key={boi.id}
+                        boi={boi}
+                    />
                 ))
             }
 

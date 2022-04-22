@@ -1,6 +1,6 @@
 import './BoiStyle.css';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Boi from '../../engine/Boi';
 
 interface BoiProps {
@@ -8,7 +8,7 @@ interface BoiProps {
 }
 
 const BoiComponent = (props: BoiProps) => {
-    const { boi } = props;
+    // const { } = props;
     
     // const [BoiData, setBoiData] = useState(Boi.asData());
 
