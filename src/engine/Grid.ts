@@ -62,7 +62,7 @@ class Grid{
         return cell;
     }
 
-    findPath(from: GridCell, to: GridCell){
+    findPath(from: GridCell, to: GridCell | ActivityZone){
         const pathfinder = new AStar(from, to);
         this.routes.push(pathfinder);
         this.onGridUpdated.send(this.asData());
@@ -88,8 +88,8 @@ class Grid{
         // console.log(zoneStart, zoneEnd);
         if(this.previewZone) {
             console.log('updating preview zone', this.previewZone.id);
-            this.previewZone.start = zoneStart;
-            this.previewZone.end = zoneEnd;
+            this.previewZone.location.leftTop = zoneStart;
+            this.previewZone.location.rightBottom = zoneEnd;
         } else {
             console.log('creating new preview zone');
             this.previewZone = new ActivityZone(zoneStart, zoneEnd, this);

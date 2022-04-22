@@ -3,23 +3,26 @@ import Grid from './Grid';
 import Pulse from './Pulse';
 import Point2D from './Point2D';
 import UIManager from './UIManager';
+import { Container, Item } from './Item';
 
-class GridCell{
+class GridCell implements Container {
     grid: Grid;
-    position: Point2D;
+    location: Point2D;
     TEMP_terrain_type: number;
     entities: Set<Boi>;
     uiManager: UIManager;
 
     onGridCellUpdated: Pulse;
     onGridCellSpawnedBoi: Pulse;
+    contents: Array<Item>;
 
     constructor(grid: Grid, x: number, y: number, uiManager: UIManager) {
         this.grid = grid;
-        this.position = new Point2D(x, y);
+        this.location = new Point2D(x, y);
         this.TEMP_terrain_type = 0;
         this.entities = new Set();
         this.uiManager = uiManager;
+        this.contents = [];
 
         this.onGridCellUpdated = new Pulse();
         this.onGridCellSpawnedBoi = new Pulse();
@@ -27,6 +30,12 @@ class GridCell{
 
     get passable(){
         return true;
+    }
+
+    addToContents(item: Item){
+        this.contents.push(item);
+        this.onGridCellUpdated.send(this.asData());
+        return this;
     }
 
     spawnBoi(){
@@ -65,27 +74,28 @@ class GridCell{
     }
 
     get north(): GridCell | undefined{
-        return this.grid.getLocalCell(this.position.plus(new Point2D(0, -1)));
+        return this.grid.getLocalCell(this.location.plus(new Point2D(0, -1)));
     }
 
     get south(): GridCell | undefined{
-        return this.grid.getLocalCell(this.position.plus(new Point2D(0, 1)));
+        return this.grid.getLocalCell(this.location.plus(new Point2D(0, 1)));
     }
 
     get east(): GridCell | undefined{
-        return this.grid.getLocalCell(this.position.plus(new Point2D(1, 0)));
+        return this.grid.getLocalCell(this.location.plus(new Point2D(1, 0)));
     }
 
     get west(): GridCell | undefined{
-        return this.grid.getLocalCell(this.position.plus(new Point2D(-1, 0)));
+        return this.grid.getLocalCell(this.location.plus(new Point2D(-1, 0)));
     }
 
     asData(){
         return {
             grid: this.grid,
-            position: this.position.asData(),
+            position: this.location.asData(),
             TEMP_terrain_type: this.TEMP_terrain_type,
             bois: this.entities,
+            contents: this.contents,
             cycleTEMP_terrain_type: this.cycleTEMP_terrain_type.bind(this),
             gridCellPressed: this.gridCellPressed.bind(this),
             gridCellReleased: this.gridCellReleased.bind(this),

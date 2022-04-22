@@ -1,4 +1,6 @@
-class Point2D {
+import RelativeLocation from './RelativeLocation';
+
+class Point2D implements RelativeLocation{
     x: number;
     y: number;
     constructor(x: number, y: number){
@@ -15,6 +17,10 @@ class Point2D {
 
     vectorTo(point: Point2D){
         return new Point2D(point.x - this.x, point.y - this.y);
+    }
+
+    nearestToPoint(other: Point2D): Point2D {
+        return this;
     }
 
     scaledBy([x, y = x]: [number, number]){

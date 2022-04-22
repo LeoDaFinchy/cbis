@@ -24,7 +24,7 @@ function getTracesFromAStar (aStar: AStar){
     const paths = aStar.getPathsBack();
     const traces = paths.map(path => {
         const trace = path.map(node => {
-            return node.position.scaledBy([traceGridWidth, traceGridHeight]).plus(new Point2D((constants.gridWidth / 2) + constants.gridSpacing, (constants.gridHeight / 2) + constants.gridSpacing)).asArray()
+            return node.location.scaledBy([traceGridWidth, traceGridHeight]).plus(new Point2D((constants.gridWidth / 2) + constants.gridSpacing, (constants.gridHeight / 2) + constants.gridSpacing)).asArray()
         })
         return trace;
     });
@@ -61,7 +61,7 @@ const GridComponent = (props: gridProps) => {
                 Array.from(gridData.cells).map((cellColumn: Array<GridCell>) => (
                     Array.from(cellColumn).map((cell: GridCell) => (
                         <GridCellComponent
-                            key={`${cell.position.x},${cell.position.y}`} 
+                            key={`${cell.location.x},${cell.location.y}`} 
                             gridCell={cell}
                             zones={gridData.zones.filter((zone:ActivityZone) => zone.contains(cell))}
                             isInPreviewZone={gridData.previewZone?.contains(cell) ?? false}

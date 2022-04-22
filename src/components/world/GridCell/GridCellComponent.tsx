@@ -4,7 +4,9 @@ import React, { useState, useEffect } from 'react';
 import GridCell from '../../../engine/GridCell';
 import Boi from '../../../engine/Boi';
 import BoiComponent from '../Boi/BoiComponent';
+import ItemComponent from '../Item/ItemComponent';
 import ActivityZone from '../../../engine/ActivityZone';
+import { Item } from '../../../engine/Item';
 
 interface GridCellProps {
     gridCell: GridCell,
@@ -68,6 +70,14 @@ const GridCellComponent = (props: GridCellProps) => {
                     <BoiComponent
                         key={boi.id}
                         boi={boi}
+                    />
+                ))
+            }
+            {
+                gridCellData.contents.map((item: Item, i) => (
+                    <ItemComponent
+                        key={i}
+                        item={item}
                     />
                 ))
             }

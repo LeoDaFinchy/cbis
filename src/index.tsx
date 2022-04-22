@@ -8,6 +8,7 @@ import GameComponent from './components/ui/Game/GameComponent';
 import Grid from './engine/Grid';
 
 import constants from './constants';
+import { Item } from './engine/Item';
 
 const testGame = new Game();
 
@@ -41,7 +42,7 @@ const processes = generator([
     () => { 
         testGame.createGrid(15, 15);
     },
-    ...Array(10).fill(() => {
+    ...Array(3).fill(() => {
         grid = Array.from(testGame.grids.values())[0];
         grid.getRandomAccessibleCell().spawnBoi()
     }),
@@ -51,6 +52,12 @@ const processes = generator([
             boi.startRouting(destination)
         });
     },
+    ...Array(3).fill(() => {
+        grid = Array.from(testGame.grids.values())[0];
+        const gridCell = grid.getRandomAccessibleCell();
+        const item = new Item(gridCell);
+        gridCell.addToContents(item);
+    }),
 ])
 
 document.onclick = () => {
