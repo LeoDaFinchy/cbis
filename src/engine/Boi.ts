@@ -20,16 +20,20 @@ class Boi {
 
     bodyState: BodyState;
     mindStates: Array<MindState>;
+    activeActivity: Activity | null;
 
     onBoiUpdated: Pulse;
+    onBoiActivityChanged: Pulse;
 
     constructor(gridCell: GridCell){
         this.id = Boi.nextId++;
         this.gridCell = gridCell;
         this.bodyState = new StandingBodyState();
         this.mindStates = [];
+        this.activeActivity = null;
 
         this.onBoiUpdated = new Pulse();
+        this.onBoiActivityChanged = new Pulse();
     }
 
     static nextId = 0;
@@ -64,8 +68,6 @@ class Boi {
     whenRoutingFinished = (finishedMindState: RoutingMindState) => {
         this.mindStates.splice(this.mindStates.findIndex(mindState => mindState === finishedMindState), 1);
         this.startTravelling(finishedMindState.route);
-        
-        // console.log('finished Routing', finishedMindState);
     }
 
     startTravelling(route: AStar) {
@@ -95,8 +97,8 @@ class Boi {
 
     startGoingToActivity(activity: Activity){
         const goingState = new GoingToActivityMindState(this, activity);
-        activity.location = this.gridCell.grid.getRandomAccessibleCell();
-        this.startRouting(activity.location);
+        // activity.location = this.gridCell.grid.getRandomAccessibleCell();
+        this.startRouting(activity.location ?? this.gridCell.grid.getRandomAccessibleCell());
         this.mindStates.push(goingState);
         goingState.onDone.add(this.whenGoingToActivityFinished);
     }
@@ -109,11 +111,19 @@ class Boi {
     startDoingActivity(activity: Activity){
         const doingState = new DoingActivityMindState(this, activity);
         doingState.onDone.add(this.whenDoingActivityFinished);
+        
+        this.activeActivity = activity;
+        this.onBoiActivityChanged.send(this.asData());
+        // console.log(activity.definition.label);
         this.mindStates.push(doingState);
     }
-
+    
     whenDoingActivityFinished = (finishedMindState: DoingActivityMindState) => {
         this.mindStates.splice(this.mindStates.findIndex(mindState => mindState === finishedMindState))
+
+        this.activeActivity = null;
+        this.onBoiActivityChanged.send(this.asData());
+        // console.log(finishedMindState.activity.definition.label);
         this.startLookingForActivity();
     }
 
@@ -133,7 +143,9 @@ class Boi {
             id: this.id,
             gridCell: this.gridCell.asData(),
             bodyState: this.bodyState,
-            mindStates: this.mindStates
+            mindStates: this.mindStates,
+            activeActivity: this.activeActivity,
+            onBoiActivityChanged: this.onBoiActivityChanged,
         }
     }
 }

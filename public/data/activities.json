@@ -2,13 +2,26 @@
     "activities": [
         {
             "name": "dance",
-            "label": "Do a little dance",
+            "label": "Doing a little dance",
             "participantNeeds": [
                 {
                     "type": "boi"
                 }
             ],
+            "zoneNeeds": [
+                "explicit"
+            ],
             "timePeriodMS": 2000
+        },
+        {
+            "name": "meditate",
+            "label": "Meditating",
+            "participantNeeds": [
+                {
+                    "type": "boi"
+                }
+            ],
+            "timePeriodMS": 5000
         }
     ]
 }

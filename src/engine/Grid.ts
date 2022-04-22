@@ -47,12 +47,16 @@ class Grid{
         this.onGridUpdated = new Pulse();
     }
 
-    getLocalCell(point: Point2D): GridCell | undefined{
-        if(point.x < 0) return;
-        if(point.y < 0) return;
-        if(point.x >= this.width) return;
-        if(point.y >= this.height) return;
-        return this.cells[point.x][point.y];
+    getLocalCell(point: Point2D): GridCell{
+        // if(point.x < 0) return;
+        // if(point.y < 0) return;
+        // if(point.x >= this.width) return;
+        // if(point.y >= this.height) return;
+        const realPoint = new Point2D(
+            Math.min(Math.max(point.x, 0), this.width - 1),
+            Math.min(Math.max(point.y, 0), this.height - 1)
+        )
+        return this.cells[realPoint.x][realPoint.y];
     }
 
     getRandomCell(): GridCell {
@@ -106,9 +110,33 @@ class Grid{
 
     refreshPossibleLocalActivities(){
         const filteredActivities = (globalGame.game?.data.activities.list ?? []).filter(activity => {
-            return activity.zoneNeeds === null;
+            if(activity.zoneNeeds.length === 0) return true;
+            if(this.zones.length > 0) return true;
+            return false;
         });
         this.possibleActivities = filteredActivities;
+    }
+
+    createActivity(definition: ActivityDefinition, firstParticipant: Boi){
+        const createdActivity = new Activity(definition);
+        createdActivity.participants.push(firstParticipant);
+        const possibleZones = this.getPossibleZonesForActivity(definition);
+        // console.log(possibleZones);
+        createdActivity.location = possibleZones.length > 0
+            ? possibleZones[0].getRandomAccessibleCell()
+            : this.getRandomAccessibleCell();
+
+        return createdActivity
+    }
+
+    getPossibleZonesForActivity(definition: ActivityDefinition){
+        return this.zones.filter(zone => {
+            if(definition.zoneNeeds.includes('explicit')){
+                if(zone) return true;
+                return false;
+            };
+            return false;
+        })
     }
 
     clearPreviewZone() {

@@ -3,6 +3,7 @@ import ActivityZone from './ActivityZone';
 import AStar from './AStar';
 import { StandingBodyState, WalkingBodyState } from './BodyState';
 import Boi from './Boi';
+import { ActivityDefinition } from './dataLibraries/ActivityLibrary';
 import GridCell from './GridCell';
 import Pulse from './Pulse';
 
@@ -34,8 +35,6 @@ export class RoutingMindState implements MindState {
         this.onDone = new Pulse();
     }
     do(){
-        // console.log('MindStateType.routingMindState');
-
         const result = this.route.router.next();
         if(result.done){
             this.onDone.send(this);
@@ -59,10 +58,7 @@ export class TravellingMindState implements MindState {
         boi.bodyState = new WalkingBodyState(this.route.finalRoute as Array<GridCell>);
         boi.bodyState.onDone.add(this.whenWalkingBodyDone);
     }
-    do(){
-        // console.log('MindStateType.travellingMindState');
-
-    }
+    do(){}
     whenWalkingBodyDone = (finishedBodyState: WalkingBodyState) => {
         this.boi.bodyState = new StandingBodyState();
         this.onDone.send(this);
@@ -84,15 +80,37 @@ export class LookingForActivityMindState implements MindState {
     }
 
     do(){
-        // console.log('MindStateType.lookingForActivityMindState');
-
         const activityOptions = this.boi.getPossibleLocalActivities();
+        // already filtered to include zoning in the local area, and things this boi can do
         const validForMe = activityOptions.filter(activity => activity.evaluateParticipantNeeds(this.boi));
 
         if(validForMe.length > 0){
-            this.foundActivity = new Activity(validForMe[0]);
+            const prioritisedActivities = this.prioritiseValidActivities(validForMe);
+            // console.log("prioritised:", prioritisedActivities);
+            const randomSelector = Math.floor(Math.random() * prioritisedActivities[0].activities.length);
+            const randomSelection = prioritisedActivities[0].activities[randomSelector];
+            this.foundActivity = this.boi.gridCell.grid.createActivity(randomSelection, this.boi);
+            // console.log(this.foundActivity);
             this.onDone.send(this);
         }
+    }
+
+    prioritiseValidActivities(filteredActivities: Array<ActivityDefinition>)
+        : Array<{priorityLevel: number, activities: Array<ActivityDefinition>}>
+    {
+        const prioritisedActivities: Map<number, Array<ActivityDefinition>> = new Map();
+        filteredActivities.forEach((activity: ActivityDefinition) => {
+            const activityPriority = 1;
+            prioritisedActivities.set(activityPriority, [
+                ...(prioritisedActivities.get(activityPriority) || []),
+                activity
+            ]);
+        });
+
+        const entries = [...prioritisedActivities.entries()];
+        const entriesObjects = entries.map(([priorityLevel, activities]) => ({priorityLevel: priorityLevel, activities: activities}))
+
+        return entriesObjects;
     }
 }
 
@@ -112,7 +130,7 @@ export class GoingToActivityMindState implements MindState {
     }
 
     do(){
-        console.log('MindStateType.goingToActivityMindState');
+        // console.log('MindStateType.goingToActivityMindState');
         if(this.boi.gridCell === this.activity.location) {
             this.onDone.send(this);
         }
@@ -137,11 +155,8 @@ export class DoingActivityMindState implements MindState {
     }
 
     whenTimeoutHasElapsed = () => {
-        console.log('timeoutover')
         this.onDone.send(this);
     }
 
-    do(){
-        console.log('MindStateType.doingActivityMindState');
-    }
+    do(){}
 }

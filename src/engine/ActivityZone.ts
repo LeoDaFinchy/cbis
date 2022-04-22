@@ -19,6 +19,20 @@ class ActivityZone {
     contains(gridCell: GridCell): boolean{
         return this.location.contains(gridCell.location);
     }
+
+    getRandomCell(): GridCell {
+        const x = Math.floor(Math.random() * (this.location.width + 1)) + this.location.leftTop.x;
+        const y = Math.floor(Math.random() * (this.location.height + 1)) + this.location.leftTop.y;
+        return this.grid.getLocalCell(new Point2D(x, y));
+    }
+
+    getRandomAccessibleCell(): GridCell {
+        let cell = this.getRandomCell();
+        while (cell.TEMP_terrain_type === 1) {
+            cell = this.getRandomCell();
+        }
+        return cell;
+    }
 }
 
 export default ActivityZone;

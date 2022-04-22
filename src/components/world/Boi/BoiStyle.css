@@ -9,3 +9,11 @@
     transform-origin: center bottom;
     transform: translate(-50%, -100%) rotateZ(var(--ntwist)) rotateX(var(--ntilt)) ;
 }
+
+.Boi.meditate {
+    background-color: skyblue;
+}
+
+.Boi.dance {
+    background-color: red;
+}

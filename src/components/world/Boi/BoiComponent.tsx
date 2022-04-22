@@ -1,6 +1,6 @@
 import './BoiStyle.css';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Boi from '../../../engine/Boi';
 
 interface BoiProps {
@@ -8,18 +8,27 @@ interface BoiProps {
 }
 
 const BoiComponent = (props: BoiProps) => {
-    // const { } = props;
+    const { boi } = props;
     
-    // const [BoiData, setBoiData] = useState(Boi.asData());
+    const [BoiData, setBoiData] = useState(boi.asData());
 
-    // useEffect(() => {
-    //     Boi.onBoiUpdated.add(setBoiData);
-    //     return () => {Boi.onBoiUpdated.remove(setBoiData)};
-    // }, [Boi.onBoiUpdated]);
+    useEffect(() => {
+        boi.onBoiActivityChanged.add(setBoiData);
+        return () => {
+            boi.onBoiActivityChanged.remove(setBoiData);
+        };
+    }, [
+        boi.onBoiActivityChanged,
+    ]);
+
+    const className = [
+        'Boi',
+        BoiData.activeActivity?.definition.name || ''
+    ].filter(classNameSegment => classNameSegment.length > 0).join(' ');
 
     return (
         <div
-            className='Boi'
+            className={className}
         >
         </div>
     );
