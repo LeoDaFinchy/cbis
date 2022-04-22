@@ -54,10 +54,6 @@ class Grid{
     }
 
     getLocalCell(point: Point2D): GridCell{
-        // if(point.x < 0) return;
-        // if(point.y < 0) return;
-        // if(point.x >= this.width) return;
-        // if(point.y >= this.height) return;
         const realPoint = new Point2D(
             Math.min(Math.max(point.x, 0), this.width - 1),
             Math.min(Math.max(point.y, 0), this.height - 1)
@@ -133,13 +129,6 @@ class Grid{
             } else {
                 return false;
             }
-            // if(activity.toolNeeds.length === 0) return true;
-            // if(activity.toolNeeds.find(toolNeed => {
-            //     console.log(this.availableTools(toolNeed).length, toolNeed);
-            //     if(this.availableTools(toolNeed).length === 0) return true;
-            //     return false;
-            // })) return false;
-            // return true;
         });
         this.possibleActivities = itemFilteredActivities;
     }
@@ -151,14 +140,6 @@ class Grid{
         createdActivity.location = possibleZones.length > 0
             ? possibleZones[0].getRandomAccessibleCell()
             : this.getRandomAccessibleCell();
-
-        // definition.toolNeeds.forEach(toolNeed => {
-        //     const toolsAvailable = this.availableTools(toolNeed);
-        //     const selectedToolIndex = Math.floor(Math.random() * toolsAvailable.length);
-        //     const selectedTool = toolsAvailable[selectedToolIndex];
-            
-        //     createdActivity.tools.push(selectedTool.claim(createdActivity));
-        // })
 
         return createdActivity
     }
@@ -172,15 +153,6 @@ class Grid{
             return false;
         })
     }
-
-    // availableTools(toolNeed: ItemSpecification){
-    //     return this.localGridItems.filter(gridItem => {
-    //         if(toolNeed.types.filter(toolType => gridItem.types.includes(toolType)).length === toolNeed.types.length){
-    //             return true;
-    //         }
-    //         return false;
-    //     });
-    // }
 
     clearPreviewZone() {
         this.previewZone = null;
