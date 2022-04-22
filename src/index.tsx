@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 
-import Game from './engine/Game';
+import Game, { globalGame } from './engine/Game';
 import GameComponent from './components/ui/Game/GameComponent';
 import Grid from './engine/Grid';
 
@@ -11,6 +11,7 @@ import constants from './constants';
 import { Item } from './engine/Item';
 
 const testGame = new Game();
+globalGame.game = testGame;
 
 ReactDOM.render(
     <React.StrictMode>
@@ -42,17 +43,16 @@ const processes = generator([
     () => { 
         testGame.createGrid(15, 15);
     },
-    ...Array(3).fill(() => {
+    ...Array(8).fill(() => {
         grid = Array.from(testGame.grids.values())[0];
         grid.getRandomAccessibleCell().spawnBoi()
     }),
     () => {
         grid.bois.forEach(boi => {
-            const destination = grid.getRandomAccessibleCell();
-            boi.startRouting(destination)
+            boi.startLookingForActivity();
         });
     },
-    ...Array(3).fill(() => {
+    ...Array(8).fill(() => {
         grid = Array.from(testGame.grids.values())[0];
         const gridCell = grid.getRandomAccessibleCell();
         const item = new Item(gridCell);

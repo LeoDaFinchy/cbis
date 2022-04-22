@@ -2,9 +2,11 @@ import Pulse from './Pulse';
 import Grid from './Grid';
 import UIManager from './UIManager';
 import Point2D from './Point2D';
+import { LibraryContainer } from './dataLibraries/LibraryContainer'
 
 class Game {
     grids: Set<Grid>;
+    data: LibraryContainer;
     uiManager: UIManager;
 
     onGameUpdated: Pulse;
@@ -14,13 +16,25 @@ class Game {
         this.uiManager.onCreateZone.add(this.createZone);
         this.uiManager.onPreviewZone.add(this.previewZone);
         this.uiManager.onPreviewZoneEnd.add(this.clearPreviewZone);
-        
+
         this.onGameUpdated = new Pulse();
+        this.data = new LibraryContainer();
+
+        this.loadData();
 
         window.setInterval(() => this.FPS1(), 1000);
         window.setInterval(() => this.FPS5(), 1000/5);
         window.setInterval(() => this.FPS10(), 1000/10);
         window.setInterval(() => this.FPS60(), 1000/60);
+
+        Object.assign(window, {game: this});
+    }
+
+    async loadData(){
+        const activityData = await fetch('./data/activities.json');
+        const activityJson = await activityData.json();
+
+        this.data.loadFromJson(activityJson);
     }
 
     createGrid(width: number, height: number){
@@ -71,9 +85,16 @@ class Game {
 
     asData(){
         return {
+            gameData: this.data,
             grids: this.grids
         }
     }
 }
+
+class GlobalGameReference {
+    game: Game | undefined;
+}
+
+export const globalGame = new GlobalGameReference();
 
 export default Game;
