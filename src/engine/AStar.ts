@@ -102,9 +102,9 @@ class AStar {
     }
     *routeStepper(){
         while(!this.finalRoute){
+            this.checkLeaves();
             this.sortLeaves();
             yield [...this.growNewLeaves()];
-            this.checkLeaves();
         }
         return this.finalRoute;
     }

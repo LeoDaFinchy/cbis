@@ -8,6 +8,9 @@ import ActivityZone from './ActivityZone';
 import { Activity } from './Activity';
 import { ActivityDefinition } from './dataLibraries/ActivityLibrary';
 import { globalGame } from './Game';
+import { Item } from './Item';
+import { requisition } from './Quartermaster';
+import { Inventory } from './Inventory';
 
 class Grid{
     id: number;
@@ -20,6 +23,7 @@ class Grid{
     zones: Array<ActivityZone>;
     activities: Array<Activity>;
     possibleActivities: Array<ActivityDefinition>;
+    localGridItems: Inventory;
     previewZone: ActivityZone | null;
 
     onGridUpdated: Pulse;
@@ -31,12 +35,14 @@ class Grid{
         this.zones = [];
         this.activities = [];
         this.possibleActivities = [];
+        this.localGridItems = new Inventory();
         this.previewZone = null;
         this.cells = new Array(width).fill(null).map(
             (v, i) => new Array(height).fill(null).map(
                 (w, j) => {
                     const newGridCell = new GridCell(this, i, j, this.uiManager);
                     newGridCell.onGridCellSpawnedBoi.add(this.whenGridCellSpawnedBoi);
+                    newGridCell.onGridCellAcquiredItem.add(this.whenGridCellAcquiredItem);
                     return newGridCell;
                 }
             )
@@ -48,10 +54,6 @@ class Grid{
     }
 
     getLocalCell(point: Point2D): GridCell{
-        // if(point.x < 0) return;
-        // if(point.y < 0) return;
-        // if(point.x >= this.width) return;
-        // if(point.y >= this.height) return;
         const realPoint = new Point2D(
             Math.min(Math.max(point.x, 0), this.width - 1),
             Math.min(Math.max(point.y, 0), this.height - 1)
@@ -78,6 +80,10 @@ class Grid{
         this.routes.push(pathfinder);
         this.onGridUpdated.send(this.asData());
         return pathfinder;
+    }
+
+    whenGridCellAcquiredItem = (item: Item) => {
+        this.localGridItems.addItem(item);
     }
 
     whenGridCellSpawnedBoi = (boi: Boi) => {
@@ -109,19 +115,28 @@ class Grid{
     }
 
     refreshPossibleLocalActivities(){
-        const filteredActivities = (globalGame.game?.data.activities.list ?? []).filter(activity => {
+        const zoneFilteredActivities = (globalGame.game?.data.activities.list ?? []).filter(activity => {
             if(activity.zoneNeeds.length === 0) return true;
             if(this.zones.length > 0) return true;
             return false;
         });
-        this.possibleActivities = filteredActivities;
+
+        const itemFilteredActivities = (zoneFilteredActivities ?? []).filter(activity => {
+            const temporaryRequisition = requisition(activity, this.localGridItems);
+            if (temporaryRequisition) {
+                this.localGridItems.absorbInventory(temporaryRequisition);
+                return true;
+            } else {
+                return false;
+            }
+        });
+        this.possibleActivities = itemFilteredActivities;
     }
 
     createActivity(definition: ActivityDefinition, firstParticipant: Boi){
         const createdActivity = new Activity(definition);
         createdActivity.participants.push(firstParticipant);
         const possibleZones = this.getPossibleZonesForActivity(definition);
-        // console.log(possibleZones);
         createdActivity.location = possibleZones.length > 0
             ? possibleZones[0].getRandomAccessibleCell()
             : this.getRandomAccessibleCell();

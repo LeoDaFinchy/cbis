@@ -8,3 +8,11 @@
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
+.Item.mat {
+    background-color: red;
+}
+
+.Item.claimed {
+    border-color: yellow;
+}

@@ -1,12 +1,16 @@
 import Boi from '../Boi';
 
+export interface ItemSpecification {
+    types: Array<string>
+}
+
 export interface ActivityDefinitionJson {
     name: string,
     label: string,
     timePeriodMS: number,
     participantNeeds: Array<Object>,
-    materialNeeds: Array<Object>,
-    toolNeeds: Array<Object>,
+    materialNeeds: Array<ItemSpecification>,
+    toolNeeds: Array<ItemSpecification>,
     zoneNeeds: Array<Object>;
 }
 
@@ -15,8 +19,8 @@ export class ActivityDefinition implements ActivityDefinitionJson{
     label: string
     timePeriodMS: number
     participantNeeds: Array<Object>
-    materialNeeds: Array<Object>
-    toolNeeds: Array<Object>
+    materialNeeds: Array<ItemSpecification>
+    toolNeeds: Array<ItemSpecification>
     zoneNeeds: Array<Object>
     constructor({
         name,
@@ -44,6 +48,11 @@ export class ActivityDefinition implements ActivityDefinitionJson{
         })
         return successful;
     }
+    // fetchSatisfactoryItemsFromGrid(grid: Grid){
+    //     return this.toolNeeds.map(toolNeed => {
+    //         return grid.availableTools(toolNeed).filter(tool => tool.claims.length === 0);
+    //     });
+    // }
 }
 
 export class ActivityLibrary{

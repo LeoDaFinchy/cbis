@@ -94,7 +94,7 @@ class UIManager {
     }
 
     switchUIMode(uiMode: UIModeTypes){
-        console.log('switchUIMode');
+        // console.log('switchUIMode');
         // If this is already in this mode, toggle off (go to default mode) instead
         if(this.uiMode.modeType === uiMode) {
             this.uiMode = new UIModeMap[UIModeTypes.DefaultUIMode](this.callbacks());

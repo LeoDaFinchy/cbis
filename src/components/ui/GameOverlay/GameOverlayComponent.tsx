@@ -22,7 +22,7 @@ const GameOverlayComponent = (props: GameOverlayProps) => {
         }
     }, [uiManager.currentModeType, uiManager.onUIModeChanged]);
 
-    console.log('renderOverlay');
+    // console.log('renderOverlay');
 
     return <div className='GameOverlay'>
         <ZoningButtonComponent uiMode={ uiManagerMode } onClick={() => uiManager.switchUIMode(UIModeTypes.ZoningUIMode)}/>

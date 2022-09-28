@@ -22,6 +22,24 @@
                 }
             ],
             "timePeriodMS": 5000
+        },
+        {
+            "name": "yoga",
+            "label": "Doing Yoga",
+            "participantNeeds": [
+                {
+                    "type": "boi"
+                }
+            ],
+            "toolNeeds": [
+                {
+                    "types": ["mat"]
+                },
+                {
+                    "types": ["mat"]
+                }
+            ],
+            "timePeriodMS": 10000
         }
     ]
 }

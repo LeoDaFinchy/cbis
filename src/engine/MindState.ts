@@ -6,6 +6,7 @@ import Boi from './Boi';
 import { ActivityDefinition } from './dataLibraries/ActivityLibrary';
 import GridCell from './GridCell';
 import Pulse from './Pulse';
+import { requisition } from './Quartermaster';
 
 export enum MindStateType {
     routingMindState,
@@ -86,10 +87,21 @@ export class LookingForActivityMindState implements MindState {
 
         if(validForMe.length > 0){
             const prioritisedActivities = this.prioritiseValidActivities(validForMe);
-            // console.log("prioritised:", prioritisedActivities);
-            const randomSelector = Math.floor(Math.random() * prioritisedActivities[0].activities.length);
-            const randomSelection = prioritisedActivities[0].activities[randomSelector];
-            this.foundActivity = this.boi.gridCell.grid.createActivity(randomSelection, this.boi);
+            while(this.foundActivity === null){
+                const randomSelector = Math.floor(Math.random() * prioritisedActivities[0].activities.length);
+                const randomSelection = prioritisedActivities[0].activities[randomSelector];
+
+                const requisitionItems = requisition(randomSelection, this.boi.gridCell.grid.localGridItems);
+                if(requisitionItems){
+                    const foundActivity = this.boi.gridCell.grid.createActivity(randomSelection, this.boi);
+                    // console.log(requisitionItems)
+                    this.foundActivity = foundActivity;
+                    requisitionItems.items.forEach(requisition => {
+                        foundActivity.tools.push(requisition.claim(foundActivity));
+                    })
+                    this.boi.gridCell.grid.localGridItems.absorbInventory(requisitionItems);
+                }
+            }
             // console.log(this.foundActivity);
             this.onDone.send(this);
         }
@@ -154,7 +166,12 @@ export class DoingActivityMindState implements MindState {
         this.timeoutId = window.setTimeout(this.whenTimeoutHasElapsed, activity.definition.timePeriodMS)
     }
 
+    finishActivity(){
+        this.activity.tools.map(claim => claim.release())
+    }
+
     whenTimeoutHasElapsed = () => {
+        this.finishActivity();
         this.onDone.send(this);
     }
 
