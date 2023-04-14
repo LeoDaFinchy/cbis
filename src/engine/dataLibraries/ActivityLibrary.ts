@@ -1,7 +1,20 @@
 import Boi from '../Boi';
 
-export interface ItemSpecification {
+export interface ItemSpecificationJson {
+    types: Array<string>,
+    tags: Array<string>
+}
+
+export class ItemSpecification {
     types: Array<string>
+    tags: Array<string>
+    constructor({
+        types = [],
+        tags = []
+    }: ItemSpecificationJson){
+        this.types = types;
+        this.tags = tags;
+    }
 }
 
 export interface ActivityDefinitionJson {
@@ -9,8 +22,8 @@ export interface ActivityDefinitionJson {
     label: string,
     timePeriodMS: number,
     participantNeeds: Array<Object>,
-    materialNeeds: Array<ItemSpecification>,
-    toolNeeds: Array<ItemSpecification>,
+    materialNeeds: Array<ItemSpecificationJson>,
+    toolNeeds: Array<ItemSpecificationJson>,
     zoneNeeds: Array<Object>;
 }
 
@@ -35,8 +48,8 @@ export class ActivityDefinition implements ActivityDefinitionJson{
         this.label = label;
         this.timePeriodMS = timePeriodMS;
         this.participantNeeds = participantNeeds;
-        this.materialNeeds = materialNeeds;
-        this.toolNeeds = toolNeeds;
+        this.materialNeeds = materialNeeds.map(json => new ItemSpecification(json));
+        this.toolNeeds = toolNeeds.map(json => new ItemSpecification(json));;
         this.zoneNeeds = zoneNeeds;
     }
 

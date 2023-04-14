@@ -40,6 +40,24 @@
                 }
             ],
             "timePeriodMS": 10000
+        },
+        {
+            "name": "tidy",
+            "label": "Tidying up",
+            "participantNeeds": [
+                {
+                    "type": "boi"
+                }
+            ],
+            "toolNeeds": [
+                {
+                    "tags": ["loose"]
+                }
+            ],
+            "zoneNeeds": [
+                "explicit"
+            ],
+            "timePeriodMS": 1000
         }
     ]
 }

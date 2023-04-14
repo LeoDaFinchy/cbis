@@ -49,5 +49,8 @@ export function doesItemMeetSpecification(item: Item, itemSpecification: ItemSpe
     if (!isSuperSetOf(item.types, itemSpecification.types)) {
         doesIt = false;
     }
+    if (!isSuperSetOf([...item.tags.values()], itemSpecification.tags)) {
+        doesIt = false;
+    }
     return doesIt;
 }

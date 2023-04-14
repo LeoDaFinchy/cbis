@@ -10,6 +10,7 @@ export interface Container {
 export class Item {
     location: Container;
     types: Array<string>;
+    tags: Set<string>;
     claims: Array<UsageClaim>;
 
     onChanged: Pulse;
@@ -17,6 +18,7 @@ export class Item {
     constructor(location: Container, types: Array<string> = []){
         this.location = location;
         this.types = types;
+        this.tags = new Set();
         this.claims = [];
 
         this.onChanged = new Pulse();
@@ -35,6 +37,14 @@ export class Item {
         this.claims.splice(index, 1);
 
         this.onChanged.send(this.asData());
+    }
+
+    addTag(newTag: string) {
+        this.tags.add(newTag);
+    }
+
+    removeTag(oldTag: string) {
+        this.tags.delete(oldTag);
     }
 
     asData() {

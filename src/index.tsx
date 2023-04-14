@@ -59,6 +59,7 @@ const processes = generator([
             grid = Array.from(testGame.grids.values())[0];
             const gridCell = grid.getRandomAccessibleCell();
             const item = new Item(gridCell);
+            item.addTag("loose");
             gridCell.addToContents(item);
         }
     }),
